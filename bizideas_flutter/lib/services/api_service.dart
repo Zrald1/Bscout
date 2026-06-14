@@ -7,13 +7,21 @@ import 'package:path_provider/path_provider.dart';
 import '../models/room_message.dart';
 
 class ApiService {
-  // TODO: Set this to your own backend server URL before deploying.
-  // Example: 'http://your-server-ip-or-domain'
-  // For local development: 'http://localhost:8000'
-  static String get baseUrl => const String.fromEnvironment(
-        'API_BASE_URL',
-        defaultValue: 'http://localhost:8000',
-      );
+  // Base URL strategy:
+  // - When served via Vercel (HTTPS): leave empty so calls go to /api/...
+  //   on the same host and Vercel's proxy forwards them to the VPS.
+  // - For local dev against localhost:  --dart-define=API_BASE_URL=http://localhost:8000
+  // - For direct VPS build:             --dart-define=API_BASE_URL=http://your-vps-ip
+  static String get baseUrl {
+    const fromEnv = String.fromEnvironment('API_BASE_URL');
+    if (fromEnv.isNotEmpty) {
+      return fromEnv;
+    }
+    // Default fallback:
+    // - Web: relative URLs (e.g. for Vercel/Netlify proxy setups)
+    // - Mobile/Desktop: local backend server URL (localhost)
+    return kIsWeb ? '' : 'http://localhost:8000';
+  }
 
   String? _mapboxAccessToken;
 
