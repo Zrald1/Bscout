@@ -32,6 +32,7 @@ class ResearchReportScreen extends StatefulWidget {
 
 class _ResearchReportScreenState extends State<ResearchReportScreen> {
   final _apiService = ApiService();
+  String _mapboxToken = '';
   bool _isDownloadingPdf = false;
   bool _isLoading = false;
   late Map<String, dynamic> _data;
@@ -40,8 +41,22 @@ class _ResearchReportScreenState extends State<ResearchReportScreen> {
   void initState() {
     super.initState();
     _data = widget.reportData ?? {};
+    _fetchMapboxToken();
     if (_data.isEmpty || !_data.containsKey('plan_details')) {
       _fetchReportData();
+    }
+  }
+
+  Future<void> _fetchMapboxToken() async {
+    try {
+      final token = await _apiService.getMapboxAccessToken();
+      if (mounted) {
+        setState(() {
+          _mapboxToken = token;
+        });
+      }
+    } catch (e) {
+      print("[DEBUG] Error fetching mapbox token: $e");
     }
   }
 
@@ -356,7 +371,7 @@ class _ResearchReportScreenState extends State<ResearchReportScreen> {
                   MapboxMapWidget(
                     lat: lat,
                     lng: lng,
-                    accessToken: 'YOUR_MAPBOX_ACCESS_TOKEN',
+                    accessToken: _mapboxToken,
                     locationName: zoneName,
                   ),
                   const SizedBox(height: 16),

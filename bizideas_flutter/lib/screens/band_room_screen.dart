@@ -36,6 +36,7 @@ class _BandRoomScreenState extends State<BandRoomScreen> {
   StreamSubscription<RoomMessage>? _streamSubscription;
 
   // Dynamic agent data extracted from messages
+  String _mapboxToken = '';
   Map<String, dynamic>? _mapCenter;
   List<dynamic> _zones = [];
   List<dynamic> _events = [];
@@ -60,7 +61,21 @@ class _BandRoomScreenState extends State<BandRoomScreen> {
   @override
   void initState() {
     super.initState();
+    _fetchMapboxToken();
     _connectToStream();
+  }
+
+  Future<void> _fetchMapboxToken() async {
+    try {
+      final token = await _apiService.getMapboxAccessToken();
+      if (mounted) {
+        setState(() {
+          _mapboxToken = token;
+        });
+      }
+    } catch (e) {
+      print("[DEBUG] Error fetching mapbox token: $e");
+    }
   }
 
   @override
@@ -362,6 +377,7 @@ class _BandRoomScreenState extends State<BandRoomScreen> {
                     messages: _messages,
                     isDownloadingReport: _isDownloadingReport,
                     onDownloadReport: _downloadReport,
+                    mapboxAccessToken: _mapboxToken,
                   ),
                 ],
               ),

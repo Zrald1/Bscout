@@ -16,6 +16,24 @@ class ApiService {
     return isAndroid ? 'http://10.0.2.2:8082' : 'http://localhost:8082';
   }
 
+  String? _mapboxAccessToken;
+
+  /// Fetches the Mapbox Access Token dynamically from the backend configuration.
+  Future<String> getMapboxAccessToken() async {
+    if (_mapboxAccessToken != null) return _mapboxAccessToken!;
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/api/config/mapbox'));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        _mapboxAccessToken = data['accessToken'];
+        return _mapboxAccessToken ?? '';
+      }
+    } catch (e) {
+      print('Error fetching Mapbox token: $e');
+    }
+    return '';
+  }
+
   final http.Client _client = http.Client();
 
   /// Creates a new multi-agent room and triggers the Orchestrator agent.

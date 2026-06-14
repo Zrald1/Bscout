@@ -68,6 +68,10 @@ async def root():
         "use_simulator": USE_SIMULATOR,
     }
 
+@app.get("/api/config/mapbox")
+async def get_mapbox_config():
+    return {"accessToken": os.getenv("MAPBOX_ACCESS_TOKEN", "")}
+
 @app.post("/api/rooms/{room_id}/messages")
 async def add_message(room_id: str, payload: MessagePayload):
     room = await simulator.get_or_create_room(room_id)

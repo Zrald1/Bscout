@@ -15,6 +15,7 @@ class ScoutingResultsDashboard extends StatelessWidget {
   final List<RoomMessage> messages;
   final bool isDownloadingReport;
   final VoidCallback onDownloadReport;
+  final String mapboxAccessToken;
 
   const ScoutingResultsDashboard({
     super.key,
@@ -25,6 +26,7 @@ class ScoutingResultsDashboard extends StatelessWidget {
     required this.messages,
     required this.isDownloadingReport,
     required this.onDownloadReport,
+    required this.mapboxAccessToken,
   });
 
   @override
@@ -89,7 +91,7 @@ class ScoutingResultsDashboard extends StatelessWidget {
           MapboxMapWidget(
             lat: centerLat,
             lng: centerLng,
-            accessToken: 'YOUR_MAPBOX_ACCESS_TOKEN',
+            accessToken: mapboxAccessToken,
             locationName: zones.isNotEmpty ? (zones.first['name'] ?? 'Best Site') : 'Best Site',
             zones: zones,
           ),
